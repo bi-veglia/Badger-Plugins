@@ -1,0 +1,14 @@
+---
+name: es_desy
+version: "0.1"
+dependencies:
+  - numpy
+  - badger-opt
+params:
+  k: 30
+  norm_coeff: 0.1
+  decay_rate: 0.999
+  max_iter: 3
+  pmin: -3
+  pmax: 1
+ 
