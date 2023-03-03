@@ -1,10 +1,8 @@
 import time
 import numpy as np
 from badger import environment
-#from badger.interface import Interface
-import sys
-sys.path.insert(1, '/Users/pecon/projects/bianca/Badger-Plugins/interfaces')
-from tine import Interface
+from badger.interface import Interface
+
 
 
 class Environment(environment.Environment):
@@ -50,14 +48,24 @@ class Environment(environment.Environment):
 
     def _get_obs(self, obs):
         time.sleep(self.params.get('waiting_time', 0))
-        tine_channel, prop = self.channel_to_tine_params[obs]
-        return self.interface.get_value(tine_channel, prop)
 
+
+        if obs == "PETRA/Lifetime/#0/Tau":
+            tine_channel, prop = self.channel_to_tine_params[obs]
+            val = self.interface.get_value(tine_channel, prop) # returns a list with three elements (e.g [8.410006523132324, 8.410006523132324, 15.865203857421875])
+            return val[2]
+
+        raise NotImplementedError(f"obs {obs} is not implemented.")
+    
 if __name__ == "__main__":
+    import sys
+    sys.path.insert(1, '/Users/pecon/projects/bianca/Badger-Plugins/interfaces')
+    from tine import Interface
+
     print("Start Test...")
     petra = Environment(Interface(), None)
     var_qs1 = petra._get_var("PETRA/Cms.MagnetPs/QS1/Strom.Soll")
     print(f"PETRA/Cms.MagnetPs/QS1/Strom.Soll : {var_qs1}")
 
-    var_tau = petra._get_var("PETRA/Lifetime/#0/Tau")
+    var_tau = petra._get_obs("PETRA/Lifetime/#0/Tau")
     print(f"PETRA/Lifetime/#0/Tau : {var_tau}")
