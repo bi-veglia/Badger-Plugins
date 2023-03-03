@@ -18,4 +18,5 @@ class Interface(interface.Interface):
         return val['data']
 
     def set_value(self, channel: str, property: str, value):
-        pt.set(channel, property, input=value)
+        #pt.set(channel, property, input=value)
+        print(f"channel {channel}, property: {property}, value: {value}")

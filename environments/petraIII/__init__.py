@@ -1,7 +1,10 @@
 import time
 import numpy as np
 from badger import environment
-from badger.interface import Interface
+#from badger.interface import Interface
+import sys
+sys.path.insert(1, '/Users/pecon/projects/bianca/Badger-Plugins/interfaces')
+from tine import Interface
 
 
 class Environment(environment.Environment):
@@ -10,47 +13,24 @@ class Environment(environment.Environment):
 
     def __init__(self, interface: Interface, params):
         super().__init__(interface, params)
-        self.channel_to_tine_params = {var: (var.split('/')[:-1], var.split('/')[-1]) for var in self.list_vars()}
+        self.channel_to_tine_params = {var: ("/".join(var.split('/')[:-1]), var.split('/')[-1]) for var in self.list_vars() + self.list_obses()}
 
     def _get_vrange(self, var):
-        return {"PETRA/Cms.MagnetPs/QS1/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS2/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS3/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS4/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_W1/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_W2/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_W3/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_W4/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_N1/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_N2/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_N3/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_N4/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_NO1/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_O3/Strom.Soll": [-0.5, 0.5],
-                "PETRA/Cms.MagnetPs/QS_O4/Strom.Soll": [-0.5, 0.5], }[var]
+        return {"PETRA/Cms.MagnetPs/QS1/Strom.Soll": [-5., 5.],
+                "PETRA/Cms.MagnetPs/QS2/Strom.Soll": [-5., 5.],
+                "PETRA/Cms.MagnetPs/QS3/Strom.Soll": [-5., 5.],
+                "PETRA/Cms.MagnetPs/QS4/Strom.Soll": [-5., 5.], }[var]
 
     @staticmethod
     def list_vars():
         return ["PETRA/Cms.MagnetPs/QS1/Strom.Soll",
                 "PETRA/Cms.MagnetPs/QS2/Strom.Soll",
                 "PETRA/Cms.MagnetPs/QS3/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS4/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_W1/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_W2/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_W3/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_W4/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_N1/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_N2/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_N3/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_N4/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_NO1/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_O3/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS_O4/Strom.Soll",]
+                "PETRA/Cms.MagnetPs/QS4/Strom.Soll",]
 
     @staticmethod
     def list_obses():
-        return ['PETRA/DiagBeamData/Direkt/VEmittance',
-                "PETRA/IfmDiagBeamData/Vertical/VEmittance"]
+        return ['PETRA/Lifetime/#0/Tau']
 
     @staticmethod
     def get_default_params():
@@ -60,6 +40,8 @@ class Environment(environment.Environment):
 
     def _get_var(self, var):
         tine_channel, prop = self.channel_to_tine_params[var]
+        print(f"tine_channel: {tine_channel}")
+        print(f"prop: {prop}")
         return self.interface.get_value(tine_channel, prop)
 
     def _set_var(self, var, x):
@@ -68,12 +50,14 @@ class Environment(environment.Environment):
 
     def _get_obs(self, obs):
         time.sleep(self.params.get('waiting_time', 0))
+        tine_channel, prop = self.channel_to_tine_params[obs]
+        return self.interface.get_value(tine_channel, prop)
 
-        if obs == "PETRA/DiagBeamData/Direkt/VEmittance":
-            tine_channel, prop = self.channel_to_tine_params[obs]
-            return self.interface.get_value(tine_channel, prop)
-        elif obs == "PETRA/IfmDiagBeamData/Vertical/VEmittance":
-            tine_channel, prop = self.channel_to_tine_params[obs]
-            return self.interface.get_value(tine_channel, prop)
+if __name__ == "__main__":
+    print("Start Test...")
+    petra = Environment(Interface(), None)
+    var_qs1 = petra._get_var("PETRA/Cms.MagnetPs/QS1/Strom.Soll")
+    print(f"PETRA/Cms.MagnetPs/QS1/Strom.Soll : {var_qs1}")
 
-        raise NotImplementedError(f"obs {obs} is not implemented.")
+    var_tau = petra._get_var("PETRA/Lifetime/#0/Tau")
+    print(f"PETRA/Lifetime/#0/Tau : {var_tau}")
