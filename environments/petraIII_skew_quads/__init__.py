@@ -7,7 +7,7 @@ from badger.interface import Interface
 
 class Environment(environment.Environment):
 
-    name = 'petraIII'
+    name = 'petraIII_skew_quads'
 
     def __init__(self, interface: Interface, params):
         super().__init__(interface, params)
@@ -17,23 +17,25 @@ class Environment(environment.Environment):
                                              var.split('/')[-1]) for var in self.list_vars() + self.list_obses()
                                              }
 
-    def _get_vrange(self, var):
-        return {"PETRA/Cms.MagnetPs/QS1/Strom.Soll": [-5., 5.],
-                "PETRA/Cms.MagnetPs/QS2/Strom.Soll": [-5., 5.],
-                "PETRA/Cms.MagnetPs/QS3/Strom.Soll": [-5., 5.],
-                "PETRA/Cms.MagnetPs/QS4/Strom.Soll": [-5., 5.], 
-                "PETRA/Cms.MagnetPs/QF/Strom.Soll": [-0.25, 0.25],
-                "PETRA/Cms.MagnetPs/QD/Strom.Soll": [-0.25, 0.25],
-                }[var]
+        self.init_currents_of_mag = [self._get_var(mag) for mag in self.list_vars()]
 
+    def _get_vrange(self, var):
+        return {mag_name: [curr_val -5, curr_val + 5] for mag_name, curr_val in zip(self.list_vars(), self.init_currents_of_mag)}[var]
+    
     @staticmethod
     def list_vars():
-        return ["PETRA/Cms.MagnetPs/QS1/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS2/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS3/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QS4/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QF/Strom.Soll",
-                "PETRA/Cms.MagnetPs/QD/Strom.Soll"]
+        return ["PETRA/Cms.MagnetPs/QS_W1/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_W2/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_W3/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_W4/Strom.Soll", 
+                "PETRA/Cms.MagnetPs/QS_N1/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_N2/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_N3/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_N4/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_NO1/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_NO2/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_O3/Strom.Soll",
+                "PETRA/Cms.MagnetPs/QS_O4/Strom.Soll"]
 
     @staticmethod
     def list_obses():
@@ -66,16 +68,3 @@ class Environment(environment.Environment):
 
         raise NotImplementedError(f"obs {obs} is not implemented.")
     
-if __name__ == "__main__":
-    import sys
-    import os
-    sys.path.insert(1, os.getcwd() + '/interfaces')
-    from tine import Interface
-
-    print("Start Test...")
-    petra = Environment(Interface(), None)
-    var_qs1 = petra._get_var("PETRA/Cms.MagnetPs/QS1/Strom.Soll")
-    print(f"PETRA/Cms.MagnetPs/QS1/Strom.Soll : {var_qs1}")
-
-    var_tau = petra._get_obs("PETRA/Lifetime/#0/Tau")
-    print(f"PETRA/Lifetime/#0/Tau : {var_tau}")
