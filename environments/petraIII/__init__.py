@@ -70,11 +70,12 @@ class Environment(environment.Environment):
         #add timerange as a user defined parameter in order to be adjusted
             timerange=self.params.get('timerange', 20)
             data=np.zeros((timerange))
+            timestamp=np.zeros((timerange))
             for s in range(timerange):
-                data[s]= self.interface.get_value("/PETRA/idc/Buffer-0","Current")
+                data[s], timestamp[s] = self.interface.get_value_with_timestamp("/PETRA/idc/Buffer-0","Current")
                 time.sleep(1)
             # Fit the function a * np.exp(b * t) + c to x and y
-            tau,_ = curve_fit(lambda t, tau: data[0] * np.exp(-t/tau), np.arange(timerange), data)
+            tau,_ = curve_fit(lambda t, tau: data[0] * np.exp(-t/tau), timestamp, data)
             return tau
         
 
