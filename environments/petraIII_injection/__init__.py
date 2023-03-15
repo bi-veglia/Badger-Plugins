@@ -23,8 +23,8 @@ class Environment(environment.Environment):
     
     def _get_vrange(self, var):
 
-        return {"PETRA/Cms.MagnetPs/QF/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QF/Strom.Soll", 5),
-                "PETRA/Cms.MagnetPs/QD/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QD/Strom.Soll", 5),
+        return {"PETRA/Cms.MagnetPs/QF/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QF/Strom.Soll", 0.25),
+                "PETRA/Cms.MagnetPs/QD/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QD/Strom.Soll", 0.25),
                 "PETRA/Kicker/Septum_Inj/FO_Soll": self.boundaries_rel_to_init_val("PETRA/Kicker/Septum_Inj/FO_Soll", 5),
                 "PETRA/Cms.MagnetPs/IME186/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/IME186/Strom.Soll", 1),
                 "PETRA/Cms.MagnetPs/SHE183/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/SHE183/Strom.Soll", 1),
@@ -54,7 +54,7 @@ class Environment(environment.Environment):
     @staticmethod
     def get_default_params():
         return {
-            'waiting_time': 1,
+            'waiting_time': 20,
         }
 
     def _get_var(self, var):
@@ -64,11 +64,17 @@ class Environment(environment.Environment):
         return self.interface.get_value(tine_channel, prop)
 
     def _set_var(self, var, x):
-        tine_channel, prop = self.channel_to_tine_params[var]
-        self.interface.set_value(tine_channel, prop, x)
+        raise NotImplementedError("not implemented because _set_vars is implemneted.")
+
+    def _set_vars(self, vars, _x):
+        for var, x in zip(vars,  _x):
+            tine_channel, prop = self.channel_to_tine_params[var]
+            self.interface.set_value(tine_channel, prop, x)
+        #To execute a manual injection one has to write 1 to '/LINAC2/LTGBU-VXW/Vorschub[PE_START]'
+        self.interface.set_value('LINAC2/LTGBU-VXW/Vorschub', 'PE_START', 1)
 
     def _get_obs(self, obs):
-        time.sleep(self.params.get('waiting_time', 0))
+        time.sleep(self.params.get('waiting_time', 20))
 
 
         if obs == 'PETRA/Transfers/#0/Efficiency.Desy2Petra':

@@ -32,8 +32,6 @@ def optimize(evaluate, params):
     decay_rate = 0.999
     dtES = 2*np.pi/(10*1.75*w0)
 
-    magic = 1e12
-
     kES , norm_coef, max_iter, pmin, pmax = \
         itemgetter('k', 'norm_coeff', 'max_iter','pmin','pmax')(params)
 
@@ -41,11 +39,16 @@ def optimize(evaluate, params):
     x = x0[0]
     print(f"x {x}")
     nparams = len(x)
-    a = 1
     wES = w0*(0.75*(1+np.arange(nparams))/(nparams)+1)
     pnew = x
     cost_val, _, _, _ = evaluate(x.reshape(1, -1))
-    cost_val = cost_val[0,0] * magic
+    #normalize the cost function to the initial value
+    magic=1.0e14
+    
+    #normal_coeff=cost_val[0,0]
+    cost_val = cost_val[0,0]*magic
+    print(f"!!!!!!!!!!!magic: {magic} ")
+
     alphaES= (norm_coef * 2)**2*(wES)/4
 
     for step in np.arange(max_iter):
@@ -64,5 +67,5 @@ def optimize(evaluate, params):
         pnew = ES_UNnormalize(pnorm, pmin, pmax)
         amplitude= amplitude*decay_rate
         cost_val, _, _, _ = evaluate(pnew.reshape(1, -1))
-        cost_val = cost_val[0,0] * magic
+        cost_val = cost_val[0,0]*magic
         time.sleep(0.01)      

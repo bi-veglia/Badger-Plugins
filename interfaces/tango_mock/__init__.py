@@ -21,14 +21,16 @@ class Interface(interface.Interface):
             if self.skewnames[j].startswith('SF2A'):
                 self.sf2a[j]=1
         sf2a_ind=np.where(self.sf2a>0)
-        for i in range(len(self.sf2a)):
-            if i==sf2a_ind[0][3]:
-                self.sf2a[i]=1
-            else:
-                self.sf2a[i]=0
+        for i in sf2a_ind:
+            self.sf2a[i]=1
+        #for i in range(len(self.sf2a)):
+            #if i==sf2a_ind:#[0][3]:
+            #    self.sf2a[i]=1
+            #else:
+                #self.sf2a[i]=0
         np.random.seed(22)
         #self.sqpinput = 0.01*np.random.rand((288))
-        self.sqpinput = 0.1*np.random.rand((len(self.indskew)))*self.sf2a
+        self.sqpinput = 0.005*np.random.rand((len(self.indskew)))*self.sf2a
 
     @staticmethod
     def get_default_params():

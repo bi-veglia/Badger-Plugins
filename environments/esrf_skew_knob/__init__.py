@@ -37,7 +37,7 @@ class Environment(environment.Environment):
     name = 'esrf_skew_knob'
 
     def __init__(self, interface: Interface, params):
-        self.limits_knobs = { name : [-4, 4] for name in Environment.knobs.get_names()}
+        self.limits_knobs = { name : [-5, 5] for name in Environment.knobs.get_names()}
         self.current_vars = []
         super().__init__(interface, params)
 
