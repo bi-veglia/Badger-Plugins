@@ -8,7 +8,7 @@ from badger.interface import Interface
 
 class Environment(environment.Environment):
 
-    name = 'petraIII'
+    name = 'petraIII_mock'
 
     def __init__(self, interface: Interface, params):
         super().__init__(interface, params)

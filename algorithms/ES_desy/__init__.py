@@ -43,11 +43,11 @@ def optimize(evaluate, params):
     pnew = x
     cost_val, _, _, _ = evaluate(x.reshape(1, -1))
     #normalize the cost function to the initial value
-    magic=1.0e14
+    
     
     #normal_coeff=cost_val[0,0]
-    cost_val = cost_val[0,0]*magic
-    print(f"!!!!!!!!!!!magic: {magic} ")
+    cost_val = cost_val[0,0]
+    
 
     alphaES= (norm_coef * 2)**2*(wES)/4
 
@@ -67,5 +67,5 @@ def optimize(evaluate, params):
         pnew = ES_UNnormalize(pnorm, pmin, pmax)
         amplitude= amplitude*decay_rate
         cost_val, _, _, _ = evaluate(pnew.reshape(1, -1))
-        cost_val = cost_val[0,0]*magic
+        cost_val = cost_val[0,0]
         time.sleep(0.01)      
