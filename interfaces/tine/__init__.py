@@ -1,5 +1,6 @@
 import PyTine as pt
 from badger import interface
+import time
 
 
 class Interface(interface.Interface):
@@ -26,4 +27,5 @@ class Interface(interface.Interface):
 
     def set_value(self, channel: str, property: str, value):
         pt.set(channel, property, input=value)
+        time.sleep(1)
         print(f"channel {channel}, property: {property}, value: {value}")

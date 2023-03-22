@@ -23,12 +23,12 @@ class Environment(environment.Environment):
     
     def _get_vrange(self, var):
     
-        return {"PETRA/Cms.MagnetPs/QS1/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS1/Strom.Soll", 5),
-                "PETRA/Cms.MagnetPs/QS2/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS2/Strom.Soll", 5),
-                "PETRA/Cms.MagnetPs/QS3/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS3/Strom.Soll", 5),
-                "PETRA/Cms.MagnetPs/QS4/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS4/Strom.Soll", 5),
-                "PETRA/Cms.MagnetPs/QF/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QF/Strom.Soll", 0.25),
-                "PETRA/Cms.MagnetPs/QD/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QD/Strom.Soll", 0.25),
+        return {"PETRA/Cms.MagnetPs/QS1/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS1/Strom.Soll", 15),
+                "PETRA/Cms.MagnetPs/QS2/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS2/Strom.Soll", 15),
+                "PETRA/Cms.MagnetPs/QS3/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS3/Strom.Soll", 15),
+                "PETRA/Cms.MagnetPs/QS4/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QS4/Strom.Soll", 15),
+                "PETRA/Cms.MagnetPs/QF/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QF/Strom.Soll", 0.50),
+                "PETRA/Cms.MagnetPs/QD/Strom.Soll": self.boundaries_rel_to_init_val("PETRA/Cms.MagnetPs/QD/Strom.Soll", 0.50),
                 }[var]
 
     @staticmethod
@@ -78,7 +78,7 @@ class Environment(environment.Environment):
                 time.sleep(self.params.get('lt_time_step', 1))
             # Fit the function a * np.exp(b * t) + c to x and y
             tau,_ = curve_fit(lambda t, tau: data[0] * np.exp(-t/tau), np.array(timestamp)-timestamp[0], data)
-            return tau[0]/3600
+            return data[0]*tau[0]/3600
         
 
             
