@@ -1,0 +1,8 @@
+---
+name: petraIII_quad_scan
+version: "0.1"
+dependencies:
+  - numpy
+  - badger-opt
+interface:
+  - tine_mock_scan

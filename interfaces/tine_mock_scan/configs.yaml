@@ -1,0 +1,7 @@
+---
+name: tine_mock_scan
+version: "0.1"
+dependencies:
+  - badger-opt
+  - numpy
+  - accelerator-toolbox

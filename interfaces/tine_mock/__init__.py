@@ -4,7 +4,6 @@ import time
 
 saved_values = {}
 foobar = None
-
 class Interface(interface.Interface):
 
     name = 'tine_mock'

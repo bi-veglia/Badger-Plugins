@@ -1,0 +1,12 @@
+---
+name: scan_values
+version: "0.1"
+dependencies:
+  - numpy
+  - badger-opt
+params:
+  init_val: 0
+  final_val: 10
+  delta: 0.5
+  max_iter: 20
+ 
