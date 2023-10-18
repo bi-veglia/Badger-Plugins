@@ -1,6 +1,8 @@
+import json
 import numpy as np
 import pandas as pd
 from badger.utils import norm, denorm
+from badger.archive import load_run
 
 
 def convert_evaluate(evaluate, configs):
@@ -17,8 +19,8 @@ def convert_evaluate(evaluate, configs):
     relations = [d[next(iter(d))] for d in configs_cons]
 
     def _evaluate(inputs):
-        x = np.array([inputs[var_name] for var_name in var_names])
-        X = norm(x, vranges[:, 0], vranges[:, 1]).reshape(1, -1)
+        x = np.array([inputs[var_name] for var_name in var_names]).reshape(1, -1)
+        X = norm(x, vranges[:, 0], vranges[:, 1])
         Y, I, E, _ = evaluate(X)
 
         outputs = {}
@@ -61,3 +63,47 @@ def get_current_data(evaluate, configs):
     init_data = pd.DataFrame(x0, columns=var_names)
 
     return init_data
+
+
+def get_init_data(configs):
+    try:
+        init_points = configs['init_points']
+        if init_points is None:
+            df = None
+        else:
+            df = pd.DataFrame.from_dict(init_points)
+
+        return df
+    except KeyError:
+        return None
+
+
+def get_run_data(filename):
+    # TODO: consider data chain
+    run = load_run(filename)
+
+    init_data = pd.DataFrame(run['data'])
+    init_data = init_data.drop(columns=['timestamp', 'timestamp_raw'])
+
+    return init_data
+
+
+def get_algo_params(cls):
+    params = {}
+    for k in cls.__fields__:
+        if k in ['vocs', 'data']:
+            continue
+
+        v = cls.__fields__[k]
+        try:
+            _ = v.default
+        except AttributeError:
+            params[k] = get_algo_params(v)
+            continue
+
+        try:
+            params[k] = json.loads(v.default.json())
+        except AttributeError:
+            params[k] = v.default
+
+    return params
